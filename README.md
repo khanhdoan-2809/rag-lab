@@ -3,12 +3,15 @@
 Build a document question-answering platform while learning why every component
 exists and how it works internally.
 
-**Current milestone: 1 — vector representation and similarity.**
-The code uses hand-assigned features and runs locally without API calls,
-credentials, Docker, or runtime dependencies. The learner checkpoint is pending;
-later milestones are plans, not implemented features.
+**Current lesson: 2 — tokens and the text-to-embedding pipeline.**
+Lesson 1 implements vector math. Lesson 2 implements a tiny byte-level BPE
+tokenizer and optionally compares it with tiktoken. Both toy demos run locally
+without API calls, credentials, Docker, or runtime dependencies; the production
+tokenizer comparison uses the optional `tokens` dependency group.
 
-Start with [the complete first lesson](docs/lessons/01-vectors-and-similarity.md).
+Work in `D:\Projects\rag-lab`.
+Start with [Lesson 1](docs/lessons/01-vectors-and-similarity.md), or continue to
+[Lesson 2](docs/lessons/02-tokens-and-embeddings.md).
 
 ## The application we will build
 
@@ -87,7 +90,7 @@ Each phase contains multiple small lessons. We stop at each lesson's checkpoint.
 
 | Phase | Lessons and concrete result |
 | --- | --- |
-| 1. Foundations | AI/ML/deep learning, LLMs and tokens; vector representations, learned embeddings, dimensions, dot product, Euclidean distance, cosine. **Milestone 1 implements only vector math and a hand-assigned example.** |
+| 1. Foundations | AI/ML/deep learning, LLMs and tokens; vector representations, learned embeddings, dimensions, dot product, Euclidean distance, cosine. **Lessons 1–2 implement vector math and byte-level tokenization.** |
 | 2. Search from scratch | Generate real embeddings; store them in Python; implement brute-force Top-K; measure O(Nd) scoring and ranking costs; compare models/dimensions. |
 | 3. Ingestion | TXT/Markdown/PDF upload and extraction, normalization, fixed/overlapping/recursive chunks, metadata, batch embedding, document/chunk persistence. Introduce FastAPI/Pydantic here. |
 | 4. Vector database | Docker Compose with PostgreSQL/pgvector; SQL operators, filters, exact search, SQLAlchemy/Alembic, HNSW and IVFFlat; measure recall versus latency against the Python baseline. |
@@ -114,12 +117,16 @@ rag-lab/
 ├── rag_lab/
 │   ├── __init__.py
 │   ├── similarity.py           # Inspectable vector arithmetic
-│   └── demo.py                 # Hand-assigned document/query vectors
+│   ├── demo.py                 # Hand-assigned document/query vectors
+│   ├── bpe.py                  # Train, encode, and decode a toy byte-level BPE
+│   └── token_demo.py           # Token inspection and optional tiktoken comparison
 ├── tests/
-│   └── test_similarity.py      # Known values, identities, invalid inputs
+│   ├── test_similarity.py      # Known values, identities, invalid inputs
+│   └── test_bpe.py             # Merge learning, boundaries, Unicode round trips
 └── docs/
     └── lessons/
-        └── 01-vectors-and-similarity.md
+        ├── 01-vectors-and-similarity.md
+        └── 02-tokens-and-embeddings.md
 ```
 
 Directories we will add as needed: `rag_lab/api/` for HTTP endpoints,
@@ -166,7 +173,24 @@ On Linux/macOS, use `.venv/bin/python` in place of the Windows executable.
 The pip option resolves versions from `pyproject.toml`; use uv for the locked
 environment. No shell activation is required with either option.
 
-## What this milestone teaches
+## Run Lesson 2
+
+```powershell
+python -m rag_lab.token_demo
+```
+
+For the production tokenizer comparison:
+
+```powershell
+uv sync --extra dev --extra tokens --locked --cache-dir .cache/uv
+.\.venv\Scripts\python.exe -m rag_lab.token_demo --compare-openai
+```
+
+The first comparison downloads public encoding data into `.cache/tiktoken/`.
+Text is tokenized locally; no embedding or generation API call is made.
+The core tests run offline without the optional `tokens` dependency.
+
+## What the lessons teach
 
 - A vector is an ordered list of coordinates. Coordinate order and meaning must agree.
 - An embedding model learns a representation; our readable features are only a teaching example.
@@ -177,19 +201,28 @@ environment. No shell activation is required with either option.
 - A similarity score is not a calibrated probability or proof of relevance.
 - Numerical and shape validation matter before a database is involved.
 
-See the lesson for the worked example, code walkthrough, experiments, and checkpoint.
+Lesson 2 adds byte-level BPE training versus encoding, fixed vocabularies,
+lossless decoding, whitespace/Unicode behavior, and model-specific token counts.
+Token IDs identify vocabulary entries; learned embeddings represent items as
+vectors. They have different jobs.
+
+Each lesson includes a worked example, code walkthrough, experiments, and checkpoint.
 
 ## Verification and learning state
 
-Verified on Windows with Python 3.13.15 and pytest 9.2.0: **37 tests passed**.
-The runnable demo output matches the worked example in the lesson. Python 3.12
+Verified on Windows with Python 3.13.15 and pytest 9.2.0: **66 tests passed**.
+The runnable demos match the worked examples. The optional comparison was also
+verified with tiktoken 0.14.0 using the `cl100k_base` encoding. Python 3.12
 is the minimum supported version; it was not separately tested in this environment.
 
 Implementation and automated verification are separate from learner understanding.
 The checked-in tests cover known scores, symmetry, positive rescaling, zero vectors,
 unequal dimensions, empty inputs, NaN/infinity, and floating-point range behavior.
+Tokenizer tests cover learned merge order, fixed inference rules, non-overlapping
+replacement, corpus boundaries, byte preservation, Unicode, and invalid inputs.
 
-- Implementation: Milestone 1 only.
-- Learner understanding: awaiting checkpoint answers.
-- Next lesson, after the checkpoint: tokens and how a trained model turns text
-  into embeddings. We will inspect a real embedding before building Top-K search.
+- Implementation: Lessons 1–2, with no ingestion, vector database, or RAG yet.
+- Progression: the learner requested Lesson 2; Lesson 1's checkpoint was not assessed.
+- Lesson 2 understanding: awaiting checkpoint answers and experiment results.
+- Next lesson: generate and inspect a real text embedding, then compare related
+  and unrelated sentences with our cosine function. Top-K search follows.

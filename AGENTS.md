@@ -18,4 +18,7 @@
 - Keep credentials in environment variables. Never commit keys or user documents.
 - For conceptual explanations, prefer an existing web image with attribution
   and explain its actual labels and arrows.
-- Current implementation: Milestone 1 only. Learner checkpoint is pending.
+- Current implementation: Lessons 1–2 (vector math and byte-level tokenization).
+  The learner requested progressing to Lesson 2; Lesson 1's checkpoint was not
+  assessed. Lesson 2's checkpoint is pending. Next: real text embeddings, followed
+  by Top-K vector search.
