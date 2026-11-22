@@ -3,15 +3,11 @@
 Build a document question-answering platform while learning why every component
 exists and how it works internally.
 
-**Current lesson: 2 — tokens and the text-to-embedding pipeline.**
-Lesson 1 implements vector math. Lesson 2 implements a tiny byte-level BPE
-tokenizer and optionally compares it with tiktoken. Both toy demos run locally
-without API calls, credentials, Docker, or runtime dependencies; the production
-tokenizer comparison uses the optional `tokens` dependency group.
+**Current lesson 3 · Inspect learned text embeddings**
 
-Work in `D:\Projects\rag-lab`.
-Start with [Lesson 1](docs/lessons/01-vectors-and-similarity.md), or continue to
-[Lesson 2](docs/lessons/02-tokens-and-embeddings.md).
+Run `python -m rag_lab.embedding_demo` to inspect three published OpenAI Cookbook vectors offline. Use `--live` with an environment API key to generate fresh embeddings. Both paths reuse the cosine function from Lesson 1.
+
+[Lesson 1 · Vector math](docs/lessons/01-vectors-and-similarity.md) · [Lesson 2 · Tokens](docs/lessons/02-tokens-and-embeddings.md) · [Lesson 3 · Learned embeddings](docs/lessons/03-learned-embeddings.md)
 
 ## The application we will build
 
@@ -119,14 +115,18 @@ rag-lab/
 │   ├── similarity.py           # Inspectable vector arithmetic
 │   ├── demo.py                 # Hand-assigned document/query vectors
 │   ├── bpe.py                  # Train, encode, and decode a toy byte-level BPE
+│   ├── embedding_demo.py       # Inspect offline or live vectors
+│   ├── review_vectors.json     # Three published vectors with a pinned source
 │   └── token_demo.py           # Token inspection and optional tiktoken comparison
 ├── tests/
 │   ├── test_similarity.py      # Known values, identities, invalid inputs
+│   ├── test_embedding_demo.py  # Batch response ordering and input validation
 │   └── test_bpe.py             # Merge learning, boundaries, Unicode round trips
 └── docs/
     └── lessons/
         ├── 01-vectors-and-similarity.md
-        └── 02-tokens-and-embeddings.md
+        ├── 02-tokens-and-embeddings.md
+        └── 03-learned-embeddings.md
 ```
 
 Directories we will add as needed: `rag_lab/api/` for HTTP endpoints,
@@ -210,7 +210,7 @@ Each lesson includes a worked example, code walkthrough, experiments, and checkp
 
 ## Verification and learning state
 
-Verified on Windows with Python 3.13.15 and pytest 9.2.0: **66 tests passed**.
+Verified on Windows with Python 3.13.15 and pytest 9.2.0: **69 tests passed**.
 The runnable demos match the worked examples. The optional comparison was also
 verified with tiktoken 0.14.0 using the `cl100k_base` encoding. Python 3.12
 is the minimum supported version; it was not separately tested in this environment.
@@ -221,8 +221,6 @@ unequal dimensions, empty inputs, NaN/infinity, and floating-point range behavio
 Tokenizer tests cover learned merge order, fixed inference rules, non-overlapping
 replacement, corpus boundaries, byte preservation, Unicode, and invalid inputs.
 
-- Implementation: Lessons 1–2, with no ingestion, vector database, or RAG yet.
-- Progression: the learner requested Lesson 2; Lesson 1's checkpoint was not assessed.
-- Lesson 2 understanding: awaiting checkpoint answers and experiment results.
-- Next lesson: generate and inspect a real text embedding, then compare related
-  and unrelated sentences with our cosine function. Top-K search follows.
+- Lesson 3 demonstrates fixed embedding width, vector norms and pairwise cosine on real review embeddings.
+- Offline comparison verified. Live request construction and response handling were tested with a stand-in response. Live inference requires an API key.
+- Lesson 3 checkpoint pending. Next lesson implements exact Top-K search.
