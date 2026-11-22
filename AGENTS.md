@@ -1,5 +1,8 @@
 # Learning project instructions
 
+- The active project root is `D:\Projects\rag-lab`. Run project commands there
+  and keep project files, virtual environments, caches, and temporary build files
+  inside that folder.
 - Teach one lesson at a time. Do not advance until the learner's checkpoint
   answers or experiment demonstrate sufficient understanding.
 - Explain the concept before implementing it, in plain English for an
